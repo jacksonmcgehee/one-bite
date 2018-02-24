@@ -10,10 +10,51 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180224192745) do
+ActiveRecord::Schema.define(version: 20180224211025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "comments", force: :cascade do |t|
+    t.string "author"
+    t.text "body"
+    t.bigint "sked_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sked_id"], name: "index_comments_on_sked_id"
+  end
+
+  create_table "skeds", force: :cascade do |t|
+    t.string "name"
+    t.string "picture"
+    t.text "details"
+    t.date "event_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tasks", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.date "due_date"
+    t.boolean "is_complete"
+    t.boolean "is_in_progress"
+    t.bigint "user_id"
+    t.bigint "sked_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sked_id"], name: "index_tasks_on_sked_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
+  end
+
+  create_table "user_skeds", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "sked_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sked_id"], name: "index_user_skeds_on_sked_id"
+    t.index ["user_id"], name: "index_user_skeds_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "provider", default: "email", null: false
@@ -44,4 +85,9 @@ ActiveRecord::Schema.define(version: 20180224192745) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "comments", "skeds"
+  add_foreign_key "tasks", "skeds"
+  add_foreign_key "tasks", "users"
+  add_foreign_key "user_skeds", "skeds"
+  add_foreign_key "user_skeds", "users"
 end
