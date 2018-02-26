@@ -1,13 +1,40 @@
 import React, {Component} from 'react'
 import {Route, BrowserRouter as Router, Switch, Redirect} from 'react-router-dom'
-import axios from 'axios'
-
 import SignUpLogIn from './components/SignUpLogIn'
+import axios from 'axios'
+// import SkedsList from "./components/SkedsList";
+import UserProfile from "./components/UserProfile"
 
 class App extends Component {
 
     state = {
-        signedIn: false
+        signedIn: false,
+        skeds: []
+    }
+
+    async componentWillMount() {
+        try {
+            let skeds = []
+            if (this.state.signedIn) {
+                skeds = await this.getSkeds()
+            }
+
+            this.setState({
+                skeds
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    getSkeds = async () => {
+        try {
+            const response = await axios.get('/skeds')
+            return response.data
+        } catch (error) {
+            console.log(error)
+            return []
+        }
     }
 
     signUp = async (email, password, password_confirmation) => {
@@ -27,40 +54,57 @@ class App extends Component {
     }
 
     signIn = async (email, password) => {
-        try {
-            const payload = {
-                email,
-                password
-            }
-            await axios.post('/auth/sign_in', payload)
+      try {
+          const payload = {
+              email,
+              password
+          }
+          await axios.post('/auth/sign_in', payload)
 
-            this.setState({signedIn: true})
+          const skeds = await this.getSkeds()
 
-        } catch (error) {
-            console.log(error)
-        }
-    }
+          this.setState({
+              signedIn: true,
+              skeds
+          })
 
-    render() {
+      } catch (error) {
+          console.log(error)
+      }
+  }
 
-        const SignUpLogInComponent = () => (
-            <SignUpLogIn
-                signUp={this.signUp}
-                signIn={this.signIn}/>
-        )
+  render() {
 
-        return (
-            <Router>
-                <div>
-                    <Switch>
-                        <Route exact path="/signUp" render={SignUpLogInComponent}/>
-                    </Switch>
+      const SignUpLogInComponent = () => (
+          <SignUpLogIn
+              signUp={this.signUp}
+              signIn={this.signIn}/>
+      )
 
-                    {this.state.signedIn ? null : <Redirect to="/signUp"/>}
-                </div>
-            </Router>
-        )
-    }
+      // const SkedsComponent = () => (
+      //     <SkedsList
+      //         skeds={this.state.skeds}/>
+      // )
+
+      const UserProfileComponent = () => (
+        <UserProfile skeds={this.state.skeds} />
+      )
+
+      return (
+          <Router>
+              <div>
+                  <Switch>
+                      <Route exact path="/signUp" render={SignUpLogInComponent}/>
+                      <Route exact path='/profile' render={UserProfileComponent} />
+                      {/* <Route exact path="/skeds" render={SkedsComponent}/> */}
+                  </Switch>
+
+                  {/* If user is signed in, redirect to their skeds. */}
+                  {this.state.signedIn ? <Redirect to="/profile"/> : <Redirect to="/signUp"/>}
+              </div>
+          </Router>
+      )
+  }
 }
 
 export default App

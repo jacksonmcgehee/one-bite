@@ -8,10 +8,45 @@
 
 
 User.destroy_all
+Sked.destroy_all
 
-demo_user = User.create!(
-    email: 'demo@epitome.com',
-    password: '0neB!+3',
-    password_confirmation: '0neB!+3'
+the_brain = User.create!(
+    email: 'brain@acme.com',
+    password: '*0neB!+3*',
+    password_confirmation: '*0neB!+3*',
+    image: 'https://i.imgur.com/P2nijtH.jpg',
+    nickname: 'The Brain'
 )
+
+pinky = User.create!(
+    email: 'pinky@acme.com',
+    password: '*0neB!+3*',
+    password_confirmation: '*0neB!+3*',
+    image: 'https://i.imgur.com/MyvTGpB.jpg',
+    nickname: 'Pinky'
+)
+
+# take_over_world = Sked.create!(
+#     name: 'Take Over the World!',
+#     picture: "https://i.imgur.com/19rnVeH.jpg",
+#     details: "Due to my superior intelligence, I will subjugate the entire World to my rule."
+# )
+
+# take_over_world << task1 = Task.create!(
+#     name: "Tonight",
+#     description: "Wait until everyone is asleep.",
+#     is_complete: false,
+#     is_in_progress: false,
+# )
+
+# take_over_world << task2 = Task.create!(
+#     name: "Snacks",
+#     description: "Buy cheese.",
+#     is_complete: false,
+#     is_in_progress: false,
+# )
+
+
+
+
 
